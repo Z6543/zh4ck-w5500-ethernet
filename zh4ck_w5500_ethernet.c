@@ -76,6 +76,7 @@ esp_err_t ethernet_init(void) {
         .sclk_io_num = W5500_PIN_SCK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
+        .max_transfer_sz = 1600,
     };
     esp_err_t ret = spi_bus_initialize(
         W5500_SPI_HOST, &spi_cfg, SPI_DMA_CH_AUTO);
@@ -119,7 +120,7 @@ esp_err_t ethernet_init(void) {
     // W5500 SPI device
     spi_device_interface_config_t dev_cfg = {
         .mode = 0,
-        .clock_speed_hz = 12 * 1000 * 1000,
+        .clock_speed_hz = 33.33 * 1000 * 1000,
         .queue_size = 20,
         .spics_io_num = W5500_PIN_CS,
     };
@@ -129,6 +130,8 @@ esp_err_t ethernet_init(void) {
     w5500_cfg.int_gpio_num = W5500_PIN_INT;
 
     eth_mac_config_t mac_cfg = ETH_MAC_DEFAULT_CONFIG();
+    mac_cfg.rx_task_stack_size = 8192;
+    mac_cfg.rx_task_prio = 20;
     eth_phy_config_t phy_cfg = ETH_PHY_DEFAULT_CONFIG();
     phy_cfg.reset_gpio_num = W5500_PIN_RST;
     phy_cfg.phy_addr = 1;
